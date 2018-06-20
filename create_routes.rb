@@ -3,12 +3,7 @@
 #
 
 def get_p(n)
-    n = n.to_i
-    m = 0
-    while (n = n / 2) > 1 do
-        m += 1
-    end
-    m
+    Math.log(n.to_i) / Math.log(2)
 end
 
 File.open "cn.txt", "r" do |f|
