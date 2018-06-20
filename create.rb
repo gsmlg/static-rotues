@@ -47,6 +47,7 @@ end.join("\n")
 
 ip_up = <<-EOF
 #!/bin/sh
+export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 
 DEV=$1
 ip=$3
@@ -72,6 +73,7 @@ end.join("\n")
 
 ip_up = <<-EOF
 #!/bin/sh
+export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 
 dev=$1
 ip=$3
@@ -90,6 +92,7 @@ end.join("\n")
 
 ip_down = <<-EOF
 #!/bin/sh
+export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 
 dev=$1
 ip=$3
