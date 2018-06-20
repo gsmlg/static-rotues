@@ -12,7 +12,7 @@ def get_p(n)
 end
 
 File.open "cn.txt", "r" do |f|
-File.open "cn.routes", "w" do |f1|
+File.open "cn.routes.txt", "w" do |f1|
     while l = f.gets do
         ip, count = l.split
         mask = 31 - get_p(count)
@@ -23,7 +23,7 @@ end
 
 
 File.open "forin.txt", "r" do |f|
-File.open "forin.routes", "w" do |f1|
+File.open "forin.routes.txt", "w" do |f1|
     while l = f.gets do
         ip, count = l.split
         mask = 31 - get_p(count)
