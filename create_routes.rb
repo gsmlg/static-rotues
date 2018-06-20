@@ -45,6 +45,8 @@ export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 
 VPN_GW=#{VPN_GW}
 
+dscacheutil -flushcache
+
 #{routes}
 
 EOF
@@ -65,7 +67,15 @@ export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 
 VPN_GW=#{VPN_GW}
 
-#{routes}
+for n in `netstat -nr | awk -v r=${VPN_GW} '{if($2 == r) print $1}' `;
+do
+    if [[ `echo $n |grep "/"` ]]
+    then
+      route delete $n ${VPN_GW}
+    else
+      route delete ${n}.0 ${VPN_GW}
+    fi
+done
 
 EOF
 
