@@ -1,0 +1,113 @@
+#!/usr/bin/env ruby
+#
+# create route file
+# ip-up ip-down
+#
+
+require "fileutils"
+require "csv"
+
+names = CSV.read("name.csv")
+
+cn = names.find do |r|
+    r[4] == "CN" 
+end
+
+cnCode = cn[0]
+
+data = CSV.read("data.csv")
+routes = []
+cnRoutes = []
+
+data.slice(1, data.length).each do |r|
+    if r.include?(cnCode)
+        cnRoutes << r[0]
+    else
+        routes << r[0]
+    end
+end
+
+=begin
+File.open "foreign.txt", "w" do |f|
+    f.write(routes.join("\n"))
+end
+
+
+File.open "cn.txt", "w" do |f|
+    f.write(cnRoutes.join("\n"))
+end
+=end
+
+FileUtils.rm_rf("mode1")
+FileUtils.mkdir("mode1")
+
+rt = routes.map do |r|
+    "route add -net #{r} -iface ${DEV}"
+end.join("\n")
+
+ip_up = <<-EOF
+#!/bin/sh
+
+DEV=$1
+ip=$3
+vip=$4
+route=$5
+
+#{rt}
+
+EOF
+
+File.open "mode1/ip-up", "w" do |f|
+    f.write(ip_up)
+end
+
+
+
+FileUtils.rm_rf("mode2")
+FileUtils.mkdir("mode2")
+
+rt = cnRoutes.map do |r|
+    "route add -net #{r} ${LGW}"
+end.join("\n")
+
+ip_up = <<-EOF
+#!/bin/sh
+
+dev=$1
+ip=$3
+vip=$4
+LGW=$5
+
+#{rt}
+
+EOF
+
+
+rt = cnRoutes.map do |r|
+    "route delete -net #{r} ${LGW}"
+end.join("\n")
+
+
+ip_down = <<-EOF
+#!/bin/sh
+
+dev=$1
+ip=$3
+vip=$4
+LGW=$5
+
+#{rt}
+
+EOF
+
+File.open "mode2/ip-up", "w" do |f|
+    f.write(ip_up)
+end
+
+
+File.open "mode2/ip-down", "w" do |f|
+    f.write(ip_down)
+end
+
+
+
