@@ -3,7 +3,7 @@
 #
 
 def get_p(n)
-    Math.log(n.to_i) / Math.log(2)
+    (Math.log(n.to_i) / Math.log(2)).to_i
 end
 
 File.open "cn.txt", "r" do |f|
