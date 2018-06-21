@@ -50,9 +50,9 @@ ip_up = <<-EOF
 export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 
 DEV=$1
-ip=$3
-vip=$4
-route=$5
+ip=$4
+vip=$5
+route=$6
 
 #{rt}
 
@@ -76,9 +76,9 @@ ip_up = <<-EOF
 export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 
 dev=$1
-ip=$3
-vip=$4
-LGW=$5
+ip=$4
+vip=$5
+LGW=$6
 
 #{rt}
 
@@ -95,9 +95,9 @@ ip_down = <<-EOF
 export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 
 dev=$1
-ip=$3
-vip=$4
-LGW=$5
+ip=$4
+vip=$5
+LGW=$6
 
 #{rt}
 
