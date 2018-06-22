@@ -80,6 +80,10 @@ ip=$4
 vip=$5
 LGW=$6
 
+route add -net 10/8 ${LGW}
+route add -net 172.16/12 ${LGW}
+route add -net 192.168/16 ${LGW}
+
 #{rt}
 
 EOF
@@ -98,6 +102,10 @@ dev=$1
 ip=$4
 vip=$5
 LGW=$6
+
+route delete -net 10/8 ${LGW}
+route delete -net 172.16/12 ${LGW}
+route delete -net 192.168/16 ${LGW}
 
 #{rt}
 
