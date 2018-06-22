@@ -62,6 +62,7 @@ File.open "mode1/ip-up", "w" do |f|
     f.write(ip_up)
 end
 
+FileUtils.chmod_R "a+x", "mode1/"
 
 
 FileUtils.rm_rf("mode2")
@@ -121,4 +122,5 @@ File.open "mode2/ip-down", "w" do |f|
 end
 
 
+FileUtils.chmod_R "a+x", "mode2/"
 
