@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cmd=curl
+cmd=aria2c
 url=http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip
 
 ${cmd} $url -o GeoLite2-Country-CSV.zip
