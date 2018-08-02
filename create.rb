@@ -31,7 +31,7 @@ FileUtils.rm_rf("mode1")
 FileUtils.mkdir("mode1")
 
 rt = routes.map do |r|
-    "route add -net #{r} -iface ${DEV}"
+    "route add -net #{r} -iface ${PPP_IFACE}"
 end.join("\n")
 
 ppp_head=<<-EOF
@@ -71,14 +71,8 @@ if [ -e /var/log/ppp-ipupdown.log ]; then
   echo
 fi
 
-DEV=$1
-ip=$4
-vip=$5
-route=$6
-
 # quit if connect to some vpn
-[[ $vip == "192.168.240.1" ]] && exit 0
-
+[[ $PPP_REMOTE == "192.168.240.1" ]] && exit 0
 EOF
 
 ip_up = <<-EOF
@@ -99,15 +93,15 @@ FileUtils.rm_rf("mode2")
 FileUtils.mkdir("mode2")
 
 rt = cnRoutes.map do |r|
-    "route add -net #{r} ${LGW}"
+    "route add -net #{r} ${PPP_IPPARAM}"
 end.join("\n")
 
 ip_up = <<-EOF
 #{ppp_head}
 
-route add -net 10/8 ${LGW}
-route add -net 172.16/12 ${LGW}
-route add -net 192.168/16 ${LGW}
+route add -net 10/8 ${PPP_IPPARAM}
+route add -net 172.16/12 ${PPP_IPPARAM}
+route add -net 192.168/16 ${PPP_IPPARAM}
 
 #{rt}
 
@@ -115,16 +109,16 @@ EOF
 
 
 rt = cnRoutes.map do |r|
-    "route delete -net #{r} ${LGW}"
+    "route delete -net #{r} ${PPP_IPPARAM}"
 end.join("\n")
 
 
 ip_down = <<-EOF
 #{ppp_head}
 
-route delete -net 10/8 ${LGW}
-route delete -net 172.16/12 ${LGW}
-route delete -net 192.168/16 ${LGW}
+route delete -net 10/8 ${PPP_IPPARAM}
+route delete -net 172.16/12 ${PPP_IPPARAM}
+route delete -net 192.168/16 ${PPP_IPPARAM}
 
 #{rt}
 
