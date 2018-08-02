@@ -120,7 +120,7 @@ end.join("\n")
 
 
 ip_down = <<-EOF
-${ppp_head}
+#{ppp_head}
 
 route delete -net 10/8 ${LGW}
 route delete -net 172.16/12 ${LGW}
