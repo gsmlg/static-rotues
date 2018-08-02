@@ -27,17 +27,6 @@ data.slice(1, data.length).each do |r|
     end
 end
 
-=begin
-File.open "foreign.txt", "w" do |f|
-    f.write(routes.join("\n"))
-end
-
-
-File.open "cn.txt", "w" do |f|
-    f.write(cnRoutes.join("\n"))
-end
-=end
-
 FileUtils.rm_rf("mode1")
 FileUtils.mkdir("mode1")
 
@@ -45,14 +34,55 @@ rt = routes.map do |r|
     "route add -net #{r} -iface ${DEV}"
 end.join("\n")
 
-ip_up = <<-EOF
+ppp_head=<<-EOF
 #!/bin/sh
-export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
+# The  environment is cleared before executing this script
+# so the path must be reset
+PATH=/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin
+export PATH
+
+# This script is called with the following arguments:
+#    Arg  Name                          Example
+#    $1   Interface name                ppp0
+#    $2   The tty                       ttyS1
+#    $3   The link speed                38400
+#    $4   Local IP number               12.34.56.78
+#    $5   Peer  IP number               12.34.56.99
+#    $6   Optional ``ipparam'' value    foo
+
+# These variables are for the use of the scripts run by run-parts
+PPP_IFACE="$1"
+PPP_TTY="$2"
+PPP_SPEED="$3"
+PPP_LOCAL="$4"
+PPP_REMOTE="$5"
+PPP_IPPARAM="$6"
+export PPP_IFACE PPP_TTY PPP_SPEED PPP_LOCAL PPP_REMOTE PPP_IPPARAM
+
+# as an additional convenience, $PPP_TTYNAME is set to the tty name,
+# stripped of /dev/ (if present) for easier matching.
+PPP_TTYNAME=`/usr/bin/basename "$2"`
+export PPP_TTYNAME
+
+# If /var/log/ppp-ipupdown.log exists use it for logging.
+if [ -e /var/log/ppp-ipupdown.log ]; then
+  exec > /var/log/ppp-ipupdown.log 2>&1
+  echo $0 $@
+  echo
+fi
 
 DEV=$1
 ip=$4
 vip=$5
 route=$6
+
+# quit if connect to some vpn
+[[ $vip == "192.168.240.1" ]] && exit 0
+
+EOF
+
+ip_up = <<-EOF
+#{ppp_head}
 
 #{rt}
 
@@ -73,13 +103,7 @@ rt = cnRoutes.map do |r|
 end.join("\n")
 
 ip_up = <<-EOF
-#!/bin/sh
-export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
-
-dev=$1
-ip=$4
-vip=$5
-LGW=$6
+#{ppp_head}
 
 route add -net 10/8 ${LGW}
 route add -net 172.16/12 ${LGW}
@@ -96,13 +120,7 @@ end.join("\n")
 
 
 ip_down = <<-EOF
-#!/bin/sh
-export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
-
-dev=$1
-ip=$4
-vip=$5
-LGW=$6
+${ppp_head}
 
 route delete -net 10/8 ${LGW}
 route delete -net 172.16/12 ${LGW}
