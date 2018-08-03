@@ -4,8 +4,12 @@
 # ip-up ip-down
 #
 
+exit if ENV["OS"].nil?
+
 require "fileutils"
 require "csv"
+
+ostype = ENV["OS"]
 
 names = CSV.read("name.csv")
 
@@ -29,10 +33,6 @@ end
 
 FileUtils.rm_rf("mode1")
 FileUtils.mkdir("mode1")
-
-rt = routes.map do |r|
-    "route add -net #{r} -iface ${PPP_IFACE}"
-end.join("\n")
 
 ppp_head=<<-EOF
 #!/bin/sh
@@ -75,6 +75,14 @@ fi
 [[ $PPP_REMOTE == "192.168.240.1" ]] && exit 0
 EOF
 
+rt = routes.map do |r|
+    if ostype == "Linux"
+        "route add -net #{r} gw ${PPP_REMOTE}"
+    else
+        "route add -net #{r} -iface ${PPP_IFACE}"
+    end
+end.join("\n")
+
 ip_up = <<-EOF
 #{ppp_head}
 
@@ -93,15 +101,19 @@ FileUtils.rm_rf("mode2")
 FileUtils.mkdir("mode2")
 
 rt = cnRoutes.map do |r|
-    "route add -net #{r} ${PPP_IPPARAM}"
+    if ostype == "Linux"
+        "route add -net #{r} gw ${PPP_IPPARAM}"
+    else
+        "route add -net #{r} ${PPP_IPPARAM}"
+    end
 end.join("\n")
 
 ip_up = <<-EOF
 #{ppp_head}
 
-route add -net 10/8 ${PPP_IPPARAM}
-route add -net 172.16/12 ${PPP_IPPARAM}
-route add -net 192.168/16 ${PPP_IPPARAM}
+route add -net 10/8 gw ${PPP_IPPARAM}
+route add -net 172.16/12 gw ${PPP_IPPARAM}
+route add -net 192.168/16 gw ${PPP_IPPARAM}
 
 #{rt}
 
@@ -109,16 +121,16 @@ EOF
 
 
 rt = cnRoutes.map do |r|
-    "route delete -net #{r} ${PPP_IPPARAM}"
+    "route del -net #{r} ${PPP_IPPARAM}"
 end.join("\n")
 
 
 ip_down = <<-EOF
 #{ppp_head}
 
-route delete -net 10/8 ${PPP_IPPARAM}
-route delete -net 172.16/12 ${PPP_IPPARAM}
-route delete -net 192.168/16 ${PPP_IPPARAM}
+route del -net 10/8 ${PPP_IPPARAM}
+route del -net 172.16/12 ${PPP_IPPARAM}
+route del -net 192.168/16 ${PPP_IPPARAM}
 
 #{rt}
 
