@@ -121,16 +121,16 @@ EOF
 
 
 rt = cnRoutes.map do |r|
-    "route del -net #{r} ${PPP_IPPARAM}"
+    "route del -net #{r} "
 end.join("\n")
 
 
 ip_down = <<-EOF
 #{ppp_head}
 
-route del -net 10/8 ${PPP_IPPARAM}
-route del -net 172.16/12 ${PPP_IPPARAM}
-route del -net 192.168/16 ${PPP_IPPARAM}
+route del -net 10/8 
+route del -net 172.16/12 
+route del -net 192.168/16 
 
 #{rt}
 
