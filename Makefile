@@ -25,3 +25,5 @@ gencsv:
 	bash download.sh
 	bash get_csv.sh
 
+clean:
+	git clean -df
