@@ -13,17 +13,17 @@ default:
 		esac
 
 
-macos: gencsv
-	OS=Darwin ruby create.rb
+macos: clean gencsv
+	@OS=Darwin ruby create.rb
 
 
-linux: gencsv
-	OS=Linux ruby create.rb
+linux: clean gencsv
+	@OS=Linux ruby create.rb
 
 
 gencsv:
-	bash download.sh
-	bash get_csv.sh
+	@bash download.sh
+	@bash get_csv.sh
 
 clean:
-	git clean -df
+	@git clean -df
