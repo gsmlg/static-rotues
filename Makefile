@@ -20,6 +20,8 @@ macos: clean gencsv
 linux: clean gencsv
 	@OS=Linux ruby create.rb
 
+openvpn: clean gencsv
+	@ruby openvpn.rb
 
 gencsv:
 	@bash download.sh

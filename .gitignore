@@ -1,2 +1,5 @@
 *.txt
 *.csv
+*.zip
+/mode1
+/mode2
