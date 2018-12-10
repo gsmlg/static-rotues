@@ -10,14 +10,14 @@ MD5=$(which md5)
 MD5SUM=$(which md5sum)
 
 if [ -x "$MD5" ]
-do
+then
 CHECKSUM=`md5 GeoLite2-Country-CSV.zip  |awk '{print $4}'`
-done
+fi
 
 if [ -x "$MD5SUM" ]
-do
+then
 CHECKSUM=`md5sum GeoLite2-Country-CSV.zip  |awk '{print $1}'`
-done
+fi
 
 sum=`cat GeoLite2-Country-CSV.zip.md5`
 
