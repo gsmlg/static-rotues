@@ -29,3 +29,4 @@ gencsv:
 
 clean:
 	@git clean -df
+	@rm -rf *.txt *.csv *.zip

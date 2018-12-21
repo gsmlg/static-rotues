@@ -31,12 +31,32 @@ end
 rt = routes.map do |r|
   network, mask = r.split("/")
   lmask = IPAddr.new('255.255.255.255').mask(mask).to_s
-  %Q(push "route #{network} #{lmask}")
+  %Q(route #{network} #{lmask} vpn_gateway)
 end
 
-File.open "openvpn.txt", "w" do |f|
+FileUtils.rm_rf("mode1")
+FileUtils.mkdir("mode1")
+
+File.open "mode1/openvpn.txt", "w" do |f|
     rt.each do |l|
         f << "#{l}\n"
     end
 end
+
+ct = cnRoutes.map do |r|
+  network, mask = r.split("/")
+  lmask = IPAddr.new('255.255.255.255').mask(mask).to_s
+  %Q(route #{network} #{lmask} net_gateway)
+end
+
+FileUtils.rm_rf("mode2")
+FileUtils.mkdir("mode2")
+
+File.open "mode2/openvpn.txt", "w" do |f|
+    f << "redirect-gateway def1 bypass-dhcp ipv6\n"
+    rt.each do |l|
+        f << "#{l}\n"
+    end
+end
+
 
