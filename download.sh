@@ -1,30 +1,25 @@
 #!/bin/sh
 
 cmd=aria2c
-url=http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip
+url="https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=${GEOIP_LICENSE_KEY}&suffix=zip"
 
 ${cmd} $url -o GeoLite2-Country-CSV.zip
-${cmd} ${url}.md5 -o GeoLite2-Country-CSV.zip.md5
+${cmd} ${url}.sha256 -o GeoLite2-Country-CSV.zip.sha256
 
-MD5=$(which md5)
-MD5SUM=$(which md5sum)
+SUMFUNC=$(which sha256sum)
 
-if [ -x "$MD5" ]
+if [ -x "$SUMFUNC" ]
 then
-CHECKSUM=`md5 GeoLite2-Country-CSV.zip  |awk '{print $4}'`
+CHECKSUM=`${SUMFUNC} GeoLite2-Country-CSV.zip  |awk '{print $1}'`
 fi
 
-if [ -x "$MD5SUM" ]
-then
-CHECKSUM=`md5sum GeoLite2-Country-CSV.zip  |awk '{print $1}'`
-fi
+sum=`cat GeoLite2-Country-CSV.zip.sha256 |awk '{print $1}'`
 
-sum=`cat GeoLite2-Country-CSV.zip.md5`
 
 if [[ $CHECKSUM == $sum ]]
 then
     echo "download success"
-    rm GeoLite2-Country-CSV.zip.md5
+    rm GeoLite2-Country-CSV.zip.sha256
     exit 0
 else
     echo "checksum fail, data is incorrect"
