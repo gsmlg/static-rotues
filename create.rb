@@ -90,8 +90,25 @@ ip_up = <<-EOF
 
 EOF
 
+nets = routes.join("\n")
+
+ipset = <<-EOF
+create abroad hash:net family inet hashsize 131080 maxelem 524288
+#{routes.map do |r|
+"add abroad #{r}"
+end.join("\n")}
+EOF
+
 File.open "mode1/ip-up", "w" do |f|
     f.write(ip_up)
+end
+
+File.open "mode1/nets", "w" do |f|
+  f.write nets
+end
+
+File.open "mode1/ipset", "w" do |f|
+  f.write ipset
 end
 
 FileUtils.chmod_R "a+x", "mode1/"
@@ -136,6 +153,15 @@ route del -net 192.168/16
 
 EOF
 
+nets = cnRoutes.join "\n"
+
+ipset = <<-EOF
+create china hash:net family inet hashsize 16385 maxelem 65535
+#{cnRoutes.map do |r|
+"add china #{r}"
+end.join("\n")}
+EOF
+
 File.open "mode2/ip-up", "w" do |f|
     f.write(ip_up)
 end
@@ -145,6 +171,15 @@ File.open "mode2/ip-down", "w" do |f|
     f.write(ip_down)
 end
 
+File.open "mode2/nets", "w" do |f|
+  f.write nets
+end
+
+File.open "mode2/ipset", "w" do |f|
+  f.write ipset
+end
 
 FileUtils.chmod_R "a+x", "mode2/"
+
+
 
